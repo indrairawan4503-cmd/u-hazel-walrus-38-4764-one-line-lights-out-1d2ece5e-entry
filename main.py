@@ -13,25 +13,33 @@ import os
 LINE = "Lid closed mid-sentence. Draft saved, never sent: \u201cThe report is almost done, I'll\u2014\u201d Cursor still blinking where you stopped."
 
 
-def main():
-    assert 1 <= len(LINE) <= 200, "line must be 1-200 characters"
-    assert LINE.strip(), "line must not be only whitespace"
-    assert "\n" not in LINE and "\r" not in LINE, "line must be a single line"
-    assert LINE == LINE.strip(), "line must have no leading/trailing whitespace"
-    assert "  " not in LINE, "line must have no double spaces"
+def validate(line):
+    """Check the entry line is a single clean line of 1-200 chars."""
+    assert 1 <= len(line) <= 200, "line must be 1-200 characters"
+    assert line.strip(), "line must not be only whitespace"
+    assert "\n" not in line and "\r" not in line, "line must be a single line"
+    assert line == line.strip(), "line must have no leading/trailing whitespace"
+    assert "  " not in line, "line must have no double spaces"
 
-    # Write to /output FIRST (the grader reads this).
+
+def write_output(data):
+    """Write the entry to /output first, then beside main.py if writable."""
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(LINE)
+        f.write(data)
 
     # Also write next to main.py; the grader sandbox mounts the repo
     # read-only, so this must never crash the run.
     try:
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry.txt"), "w", encoding="utf-8") as f:
-            f.write(LINE)
+            f.write(data)
     except OSError:
         pass
+
+
+def main():
+    validate(LINE)
+    write_output(LINE)
 
     print(f"{len(LINE)} chars")
     print(LINE)
